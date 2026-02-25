@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         NoEMP
 // @namespace    http://tampermonkey.net/
-// @version      0.0.2-beta
+// @version      0.0.2
 // @description  NoEMP
 // @author       Pon4ick
 // @match        https://kb.bvbinfo.ru/lessons/*
 // @grant        none
-// @updateURL  https://raw.githubusercontent.com/Pon4ick/NoEMP/refs/heads/main/noemp.js
+// @updateURL    https://raw.githubusercontent.com/Pon4ick/NoEMP/refs/heads/main/noemp.js
 // @downloadURL  https://raw.githubusercontent.com/Pon4ick/NoEMP/refs/heads/main/noemp.js
 // ==/UserScript==
 
