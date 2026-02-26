@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         NoEMP
 // @namespace    http://tampermonkey.net/
-// @version      0.0.2
+// @version      1.0.0
 // @description  NoEMP
 // @author       Pon4ick
-// @match        https://kb.bvbinfo.ru/lessons/*
+// @match        https://kb.bvbinfo.ru/*
 // @grant        none
 // @updateURL    https://raw.githubusercontent.com/Pon4ick/NoEMP/refs/heads/main/noemp.js
 // @downloadURL  https://raw.githubusercontent.com/Pon4ick/NoEMP/refs/heads/main/noemp.js
@@ -12,50 +12,77 @@
 
 (function() {
     'use strict';
-    var isProcessed = false;
+    var isChange = false
 
-    function main() {
-        let videos = document.querySelectorAll(".vjs-poster");
-        console.warn(videos)
-        for (let i = 1; i < videos.length; i++) {
-            let element = videos[i]
-            element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.remove()
-        }
+    function main3() {
+        if (!isChange) {
+            isChange = true
 
-        let navItems = document.querySelectorAll(".pl-2.mb-1.text-sm");
-        let videoText = [];
-        for (let element of navItems) {
-            if (element.children[0].innerText.toLowerCase().includes("видео")) {
-                videoText.push(element)
+            let sidebar = document.querySelectorAll(".sidebar__inner.grid.gap-4")
+            sidebar[0].children[0].remove()
+            sidebar[0].children[0].remove()
+
+            let navItems = document.querySelectorAll(".pl-2.mb-1.text-sm");
+            let videoText = [];
+            for (let element of navItems) {
+                if (element.children[0].innerText.toLowerCase().includes("ролик")) {
+                    videoText.push(element)
+                }
             }
-        }
-        for (let i = 1; i < videoText.length; i++) {
-            let element = videoText[i]
-            element.remove()
+            for (let i = 2; i < videoText.length; i++) {
+                let element = videoText[i]
+                element.remove()
+            }
+
+            let containers = document.querySelectorAll('.mb-3.last\\:mb-0');
+            let videoInTitle = 0
+            let elemntNumbers = 1
+            for (let i = 0; i < containers.length; i++) {
+                let container = containers[i]
+
+                let titleText = container.querySelector(".text-xl.font-medium.md\\:text-2xl.xl\\:mr-3")
+                if (titleText && titleText.children[0].innerText.toLowerCase().includes('ролик')) {
+                    videoInTitle += 1
+                    if (videoInTitle > 2) {
+                        container.remove()
+                        elemntNumbers -= 1
+                    }
+                }
+
+                elemntNumbers += 1
+                let elementText = container.querySelectorAll(".flex.lg\\:flex-row.flex-col.lg\\:items-center.lg\\:justify-between.text-black-40")
+                elementText[elementText.length - 1].querySelector(".text-base.mt-1\\.5").textContent = `Элемент ${elemntNumbers}`
+            }
         }
     }
 
 
-    function doYourStuff() {
-        let navItems = document.querySelectorAll(".vjs-poster");
-        if (navItems.length > 0) {
-            main()
+    function check() {
+        let items = document.querySelectorAll(".vjs-poster");
+        if (items.length > 0) {
+            main3()
             return true;
         }
         return false;
     }
-
-    if (!doYourStuff()) {
-
-        const observer = new MutationObserver(function(mutations) {
-            if (doYourStuff()) {
-                //observer.disconnect();
+    
+    // OBSERVERS
+    let lastUrl = location.href;
+    const observer = new MutationObserver(function(mutations) {
+        const url = location.href;
+        if (url !== lastUrl) {
+            lastUrl = url;
+            isChange = false
+        }
+        for (let mutation of mutations) {
+            if (mutation.addedNodes.length > 0) {
+                check()
             }
-        });
+        }
+    });
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 })();
